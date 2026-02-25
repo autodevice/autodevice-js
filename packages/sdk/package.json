@@ -1,0 +1,42 @@
+{
+  "name": "@autodevice/sdk",
+  "version": "0.1.0",
+  "description": "TypeScript SDK for the AutoDevice REST API",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "license": "MIT",
+  "author": "AutoDevice",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/autodevice/autodevice-js.git",
+    "directory": "packages/sdk"
+  },
+  "homepage": "https://github.com/autodevice/autodevice-js/tree/main/packages/sdk",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^25.3.0",
+    "msw": "^2.7.0",
+    "tsup": "^8.3.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

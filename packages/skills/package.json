@@ -1,0 +1,17 @@
+{
+  "name": "@autodevice/skills",
+  "version": "0.1.0",
+  "description": "Claude Code skills for AutoDevice",
+  "license": "MIT",
+  "author": "AutoDevice",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/autodevice/autodevice-js.git",
+    "directory": "packages/skills"
+  },
+  "homepage": "https://github.com/autodevice/autodevice-js/tree/main/packages/skills",
+  "files": ["skills", "install.sh"],
+  "scripts": {
+    "install-skills": "bash install.sh"
+  }
+}
