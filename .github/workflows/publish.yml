@@ -1,0 +1,74 @@
+name: Publish to npm
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: oven-sh/setup-bun@v2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - run: bun install
+
+      - run: bun run build
+
+      - name: Check changed versions
+        id: versions
+        run: |
+          check_version() {
+            local pkg_dir=$1
+            local key=$2
+            OLD=$(git show HEAD~1:$pkg_dir/package.json 2>/dev/null | jq -r '.version' 2>/dev/null || echo "")
+            NEW=$(jq -r '.version' $pkg_dir/package.json)
+            if [ "$OLD" != "$NEW" ]; then
+              echo "$key=true" >> $GITHUB_OUTPUT
+              echo "$key: $OLD → $NEW"
+            else
+              echo "$key=false" >> $GITHUB_OUTPUT
+              echo "$key: unchanged ($NEW)"
+            fi
+          }
+          check_version packages/sdk sdk
+          check_version packages/cli cli
+          check_version packages/mcp mcp
+          check_version packages/skills skills
+          check_version packages/autodevice autodevice
+
+      - name: Publish @autodevice/sdk
+        if: steps.versions.outputs.sdk == 'true'
+        working-directory: packages/sdk
+        run: npm publish --provenance --access public
+
+      - name: Publish @autodevice/cli
+        if: steps.versions.outputs.cli == 'true'
+        working-directory: packages/cli
+        run: npm publish --provenance --access public
+
+      - name: Publish @autodevice/mcp
+        if: steps.versions.outputs.mcp == 'true'
+        working-directory: packages/mcp
+        run: npm publish --provenance --access public
+
+      - name: Publish @autodevice/skills
+        if: steps.versions.outputs.skills == 'true'
+        working-directory: packages/skills
+        run: npm publish --provenance --access public
+
+      - name: Publish autodevice
+        if: steps.versions.outputs.autodevice == 'true'
+        working-directory: packages/autodevice
+        run: npm publish --provenance --access public

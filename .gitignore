@@ -33,3 +33,7 @@ coverage/
 # Changesets temp
 .changeset/*.md
 !.changeset/config.json
+
+# Tarballs / caches
+*.tgz
+.npm-cache/

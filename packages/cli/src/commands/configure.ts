@@ -1,6 +1,8 @@
 import { Command } from "commander";
 import { readConfig, writeConfig } from "../config";
 import chalk from "chalk";
+import { createInterface } from "node:readline/promises";
+import { stdin as input, stdout as output } from "node:process";
 
 export function registerConfigureCommand(program: Command) {
   program
@@ -8,11 +10,40 @@ export function registerConfigureCommand(program: Command) {
     .description("Configure AutoDevice CLI settings")
     .option("--api-key <key>", "Set API key")
     .option("--base-url <url>", "Set custom base URL")
-    .action((opts) => {
+    .action(async (opts) => {
       const config = readConfig();
 
-      if (opts.apiKey) config.api_key = opts.apiKey;
-      if (opts.baseUrl) config.base_url = opts.baseUrl;
+      let apiKey: string | undefined = opts.apiKey;
+      let baseUrl: string | undefined = opts.baseUrl;
+
+      if (!apiKey && !baseUrl && input.isTTY && output.isTTY) {
+        const rl = createInterface({ input, output });
+        try {
+          const apiPrompt = config.api_key
+            ? "API key (press Enter to keep current): "
+            : "API key: ";
+          const nextApiKey = (await rl.question(apiPrompt)).trim();
+          if (nextApiKey) apiKey = nextApiKey;
+
+          const basePrompt = config.base_url
+            ? "Base URL (press Enter to keep current, '-' to clear): "
+            : "Base URL (optional): ";
+          const nextBaseUrl = (await rl.question(basePrompt)).trim();
+          if (nextBaseUrl === "-") {
+            baseUrl = "";
+          } else if (nextBaseUrl) {
+            baseUrl = nextBaseUrl;
+          }
+        } finally {
+          rl.close();
+        }
+      }
+
+      if (apiKey) config.api_key = apiKey;
+      if (baseUrl !== undefined) {
+        if (baseUrl) config.base_url = baseUrl;
+        else delete config.base_url;
+      }
 
       writeConfig(config);
       console.log(chalk.green("Configuration saved to ~/.autodevice/config.json"));

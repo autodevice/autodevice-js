@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "autodevice",
+      "name": "autodevice-js",
       "devDependencies": {
         "@changesets/cli": "^2.27.0",
         "eslint": "^9.0.0",
@@ -13,9 +13,19 @@
         "vitest": "^2.1.0",
       },
     },
-    "packages/cli": {
+    "packages/autodevice": {
       "name": "autodevice",
-      "version": "0.1.0",
+      "version": "0.1.2",
+      "bin": {
+        "autodevice": "./bin/autodevice.js",
+      },
+      "dependencies": {
+        "@autodevice/cli": "workspace:*",
+      },
+    },
+    "packages/cli": {
+      "name": "@autodevice/cli",
+      "version": "0.1.2",
       "bin": {
         "autodevice": "./bin/autodevice.js",
       },
@@ -33,7 +43,7 @@
     },
     "packages/mcp": {
       "name": "@autodevice/mcp",
-      "version": "0.1.0",
+      "version": "0.1.2",
       "bin": {
         "autodevice-mcp": "./dist/index.js",
       },
@@ -49,7 +59,7 @@
     },
     "packages/sdk": {
       "name": "@autodevice/sdk",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "devDependencies": {
         "@types/node": "^25.3.0",
         "msw": "^2.7.0",
@@ -58,10 +68,12 @@
     },
     "packages/skills": {
       "name": "@autodevice/skills",
-      "version": "0.1.0",
+      "version": "0.1.1",
     },
   },
   "packages": {
+    "@autodevice/cli": ["@autodevice/cli@workspace:packages/cli"],
+
     "@autodevice/mcp": ["@autodevice/mcp@workspace:packages/mcp"],
 
     "@autodevice/sdk": ["@autodevice/sdk@workspace:packages/sdk"],
@@ -322,7 +334,7 @@
 
     "assertion-error": ["assertion-error@2.0.1", "", {}, "sha512-Izi8RQcffqCeNVgFigKli1ssklIbpHnCYc6AknXGYoB6grJqyeby7jv12JUQgmTAnIDnbck1uxksT4dzN3PWBA=="],
 
-    "autodevice": ["autodevice@workspace:packages/cli"],
+    "autodevice": ["autodevice@workspace:packages/autodevice"],
 
     "balanced-match": ["balanced-match@1.0.2", "", {}, "sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw=="],
 

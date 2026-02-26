@@ -1,6 +1,6 @@
 {
   "name": "@autodevice/skills",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "description": "Claude Code skills for AutoDevice",
   "license": "MIT",
   "author": "AutoDevice",
@@ -10,7 +10,13 @@
     "directory": "packages/skills"
   },
   "homepage": "https://github.com/autodevice/autodevice-js/tree/main/packages/skills",
-  "files": ["skills", "install.sh"],
+  "files": [
+    "skills",
+    "install.sh"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "install-skills": "bash install.sh"
   }

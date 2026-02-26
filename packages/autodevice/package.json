@@ -1,0 +1,26 @@
+{
+  "name": "autodevice",
+  "version": "0.1.3",
+  "description": "CLI for AutoDevice — automated mobile app testing",
+  "type": "module",
+  "bin": {
+    "autodevice": "./bin/autodevice.js"
+  },
+  "license": "MIT",
+  "author": "AutoDevice",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/autodevice/autodevice-js.git",
+    "directory": "packages/autodevice"
+  },
+  "homepage": "https://github.com/autodevice/autodevice-js/tree/main/packages/cli",
+  "files": [
+    "bin"
+  ],
+  "dependencies": {
+    "@autodevice/cli": "workspace:*"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
