@@ -45,12 +45,15 @@ jobs:
       - if: steps.version.outputs.changed == 'true'
         run: bun run build
 
-      - name: Sync version to all packages
+      - name: Sync version and resolve workspace deps
         if: steps.version.outputs.changed == 'true'
         run: |
           VERSION=$(jq -r '.version' package.json)
           for pkg in packages/*/package.json; do
-            jq --arg v "$VERSION" '.version = $v' "$pkg" > "$pkg.tmp" && mv "$pkg.tmp" "$pkg"
+            jq --arg v "$VERSION" '
+              .version = $v |
+              if .dependencies then .dependencies |= with_entries(if .value == "workspace:*" then .value = $v else . end) else . end
+            ' "$pkg" > "$pkg.tmp" && mv "$pkg.tmp" "$pkg"
           done
 
       - name: Publish @autodevice/sdk
