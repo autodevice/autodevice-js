@@ -26,53 +26,54 @@ jobs:
 
       - run: npm install -g npm@latest
 
-      - run: bun install
-
-      - run: bun run build
-
-      - name: Check changed versions
-        id: versions
+      - name: Check if version changed
+        id: version
         run: |
-          check_version() {
-            local pkg_dir=$1
-            local key=$2
-            OLD=$(git show HEAD~1:$pkg_dir/package.json 2>/dev/null | jq -r '.version' 2>/dev/null || echo "")
-            NEW=$(jq -r '.version' $pkg_dir/package.json)
-            if [ "$OLD" != "$NEW" ]; then
-              echo "$key=true" >> $GITHUB_OUTPUT
-              echo "$key: $OLD → $NEW"
-            else
-              echo "$key=false" >> $GITHUB_OUTPUT
-              echo "$key: unchanged ($NEW)"
-            fi
-          }
-          check_version packages/sdk sdk
-          check_version packages/cli cli
-          check_version packages/mcp mcp
-          check_version packages/skills skills
-          check_version packages/autodevice autodevice
+          OLD=$(git show HEAD~1:package.json | jq -r '.version')
+          NEW=$(jq -r '.version' package.json)
+          if [ "$OLD" != "$NEW" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Version changed: $OLD → $NEW"
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "Version unchanged: $NEW"
+          fi
+
+      - if: steps.version.outputs.changed == 'true'
+        run: bun install
+
+      - if: steps.version.outputs.changed == 'true'
+        run: bun run build
+
+      - name: Sync version to all packages
+        if: steps.version.outputs.changed == 'true'
+        run: |
+          VERSION=$(jq -r '.version' package.json)
+          for pkg in packages/*/package.json; do
+            jq --arg v "$VERSION" '.version = $v' "$pkg" > "$pkg.tmp" && mv "$pkg.tmp" "$pkg"
+          done
 
       - name: Publish @autodevice/sdk
-        if: steps.versions.outputs.sdk == 'true'
+        if: steps.version.outputs.changed == 'true'
         working-directory: packages/sdk
         run: npm publish --provenance --access public
 
       - name: Publish @autodevice/cli
-        if: steps.versions.outputs.cli == 'true'
+        if: steps.version.outputs.changed == 'true'
         working-directory: packages/cli
         run: npm publish --provenance --access public
 
       - name: Publish @autodevice/mcp
-        if: steps.versions.outputs.mcp == 'true'
+        if: steps.version.outputs.changed == 'true'
         working-directory: packages/mcp
         run: npm publish --provenance --access public
 
       - name: Publish @autodevice/skills
-        if: steps.versions.outputs.skills == 'true'
+        if: steps.version.outputs.changed == 'true'
         working-directory: packages/skills
         run: npm publish --provenance --access public
 
       - name: Publish autodevice
-        if: steps.versions.outputs.autodevice == 'true'
+        if: steps.version.outputs.changed == 'true'
         working-directory: packages/autodevice
         run: npm publish --provenance --access public
