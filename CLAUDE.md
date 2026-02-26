@@ -90,8 +90,6 @@ cd packages/mcp && bun run build
 Base URL: `https://autodevice.io/api/v1`
 Auth: `Authorization: Bearer <api_key>`
 
-The full API spec is in `docs/plans/sdk-cli-skills-plan.md` (Section 7).
-
 ## Adding a New SDK Resource
 
 1. Create types in `packages/sdk/src/types/<resource>.ts`
